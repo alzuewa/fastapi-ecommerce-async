@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
+from datetime import datetime
 from decimal import Decimal
+
+from pydantic import BaseModel, Field, ConfigDict, EmailStr
+
 
 
 class CategoryCreate(BaseModel):
@@ -118,5 +121,37 @@ class Cart(BaseModel):
     items: list[CartItem] = Field(default_factory=list, description='Cart contents')
     total_quantity: int = Field(..., ge=0, description='Total products amount')
     total_price: Decimal = Field(..., ge=0, description='Total cart price')
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrderItem(BaseModel):
+    id: int = Field(..., description='Item position ID')
+    product_id: int = Field(..., description='Product ID')
+    quantity: int = Field(..., ge=1, description='Quantity')
+    unit_price: Decimal = Field(..., ge=0, description='Price per item')
+    total_price: Decimal = Field(..., ge=0, description='Total price for item')
+    product: Product | None = Field(None, description='Full item data')
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Order(BaseModel):
+    id: int = Field(..., description='Order ID')
+    user_id: int = Field(..., description='User ID')
+    status: str = Field(..., description='Current order status')
+    total_amount: Decimal = Field(..., ge=0, description='Total price')
+    created_at: datetime = Field(..., description='Order created at')
+    updated_at: datetime = Field(..., description='Order last updated at')
+    items: list[OrderItem] = Field(default_factory=list, description='Order items list')
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrderList(BaseModel):
+    items: list[Order] = Field(..., description='Orders on the current page')
+    total: int = Field(ge=0, description='Total orders amount')
+    page: int = Field(ge=1, description='Current page')
+    page_size: int = Field(ge=1, description='Page size')
 
     model_config = ConfigDict(from_attributes=True)
