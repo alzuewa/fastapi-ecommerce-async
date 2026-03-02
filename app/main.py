@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import cart, categories, orders, products, users
 
@@ -7,6 +8,8 @@ app = FastAPI(
     title='FastAPI Online-shop',
     version='0.1.0',
 )
+
+app.mount('/media', StaticFiles(directory='media'), name='media')
 
 # Plug in categories routes
 app.include_router(categories.router)

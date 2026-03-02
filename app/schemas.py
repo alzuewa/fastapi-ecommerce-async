@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Annotated
 
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
-
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, Form
 
 
 class CategoryCreate(BaseModel):
@@ -27,14 +27,30 @@ class Category(BaseModel):
 
 class ProductCreate(BaseModel):
     """
-    Model to create and update product
+    Model to create and update product.
     """
     name: str = Field(..., min_length=3, max_length=100, description='Product name (3-100 symbols)')
     description: str | None = Field(None, max_length=500, description='Product description (up to 500 symbols)')
     price: Decimal = Field(..., gt=0, description='Product price', decimal_places=2)
-    image_url: str | None = Field(None, max_length=200, description='Product image URL')
     stock: int = Field(..., ge=0, description='Available product items number')
     category_id: int = Field(..., description='Product category ID')
+
+    @classmethod
+    def as_form(
+            cls,
+            name: Annotated[str, Form(...)],
+            price: Annotated[Decimal, Form(...)],
+            stock: Annotated[int, Form(...)],
+            category_id: Annotated[int, Form(...)],
+            description: Annotated[str | None, Form()] = None,
+    ) -> 'ProductCreate':
+        return cls(
+            name=name,
+            description=description,
+            price=price,
+            stock=stock,
+            category_id=category_id,
+        )
 
 
 class Product(BaseModel):
