@@ -67,3 +67,14 @@ class User(BaseModel):
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
 
+
+class ProductList(BaseModel):
+    """
+    Products list for pagination
+    """
+    items: list[Product] = Field(description='Current page products')
+    total: int = Field(ge=0, description='Total products number')
+    page: int = Field(ge=1, description='Current page number')
+    page_size: int = Field(ge=1, description='Items number on the page')
+
+    model_config = ConfigDict(from_attributes=True)  # for reading from ORM-objects
