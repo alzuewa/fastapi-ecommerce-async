@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routers import categories, products
+from app.routers import categories, products, users
 
 
 app = FastAPI(
@@ -11,6 +11,7 @@ app = FastAPI(
 # Plug in categories routes
 app.include_router(categories.router)
 app.include_router(products.router)
+app.include_router(users.router)
 
 
 # Root endpoint for health-check
