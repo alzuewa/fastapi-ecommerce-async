@@ -78,3 +78,45 @@ class ProductList(BaseModel):
     page_size: int = Field(ge=1, description='Items number on the page')
 
     model_config = ConfigDict(from_attributes=True)  # for reading from ORM-objects
+
+
+class CartItemBase(BaseModel):
+    product_id: int = Field(description='Product ID')
+    quantity: int = Field(ge=1, description='Product items number')
+
+
+class CartItemCreate(CartItemBase):
+    """
+    Model to add a new product to a cart.
+    """
+    pass
+
+
+class CartItemUpdate(BaseModel):
+    """
+    Model to update product quantity in a cart.
+    """
+    quantity: int = Field(..., ge=1, description='Updated quantity')
+
+
+class CartItem(BaseModel):
+    """
+    Product in cart with product data.
+    """
+    id: int = Field(..., description='Cart item ID')
+    quantity: int = Field(..., ge=1, description='Item quantity')
+    product: Product = Field(..., description='Item data')
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Cart(BaseModel):
+    """
+    Full user cart data
+    """
+    user_id: int = Field(..., description='User ID')
+    items: list[CartItem] = Field(default_factory=list, description='Cart contents')
+    total_quantity: int = Field(..., ge=0, description='Total products amount')
+    total_price: Decimal = Field(..., ge=0, description='Total cart price')
+
+    model_config = ConfigDict(from_attributes=True)
